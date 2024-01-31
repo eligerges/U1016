@@ -1,0 +1,6 @@
+# Pour Créer une heatmap:
+library(corrplot)
+c <- cor(Test)
+col <- colorRampPalette(c ("blue", "white", "red")) (100)
+heatmap(x=c, col=col, symm = TRUE)
+
