@@ -1,6 +1,108 @@
 # Pour Créer une heatmap:
 library(corrplot)
-c <- cor(Test)
+# Elimination rows with NA
+INFproject2 <- na.omit(INFproject)
+c <- cor(INFproject2)
 col <- colorRampPalette(c ("blue", "white", "red")) (100)
 heatmap(x=c, col=col, symm = TRUE)
 
+# Remplacement NA par 0
+INFproject[is.na(INFproject)] <- 0
+c <- cor(INFproject)
+col <- colorRampPalette(c ("blue", "white", "red")) (100)
+heatmap(x=c, col=col, symm = TRUE)
+
+
+# Elimination des rows NA pour une colonne
+INFproject_modified[is.na(INFproject_modified)] <- 0
+c <- cor(INFproject_modified)
+col <- colorRampPalette(c ("blue", "white", "red")) (100)
+heatmap(x=c, col=col, symm = TRUE)
+
+# Elimination des cytokines manquantes
+c <- cor(INFproject_eliminated)
+col <- colorRampPalette(c ("blue", "white", "red")) (100)
+heatmap(x=c, col=col, symm = TRUE)
+
+attach(INFproject)
+library(corrplot)
+# Elimination rows with NA
+INFproject2 <- na.omit(INFproject)
+c <- cor(INFproject2)
+col <- colorRampPalette(c ("blue", "white", "red")) (100)
+heatmap(x=c, col=col, symm = TRUE)
+
+# Remplacement NA par 0
+INFproject[is.na(INFproject)] <- 0
+c <- cor(INFproject)
+col <- colorRampPalette(c ("blue", "white", "red")) (100)
+heatmap(x=c, col=col, symm = TRUE)
+
+
+# Elimination des rows NA pour une colonne
+INFproject_modified[is.na(INFproject_modified)] <- 0
+c <- cor(INFproject_modified)
+col <- colorRampPalette(c ("blue", "white", "red")) (100)
+heatmap(x=c, col=col, symm = TRUE)
+
+# Elimination des cytokines manquantes
+c <- cor(INFproject_eliminated)
+col <- colorRampPalette(c ("blue", "white", "red")) (100)
+heatmap(x=c, col=col, symm = TRUE)
+
+
+
+library(ggplot2)
+library(readxl)
+library(writexl)
+library(ggpubr)
+library(purrr)
+library(dplyr)
+library(shiny)
+library(ggrepel)
+library(corrplot)
+library(Hmisc)
+library(psych)
+library(RcmdrMisc)
+library(PerformanceAnalytics)
+library(GGally)
+
+INFproject_COR <- rcorr.adjust(INFproject, type = "spearman", use = "pairwise.complete.obs")
+INFproject_COR_P <- INFproject_COR$R$P
+INFproject_COR_n <- INFproject_COR$R$n
+INFproject_COR_r <- INFproject_COR$R$r
+
+
+INFproject_COR_r [is.na(INFproject_COR_r)] <- 0
+INFproject_COR_r[is.nan(INFproject_COR_r)] <- 0
+INFproject_COR_r [is.infinite(INFproject_COR_r)] <- 0
+
+#in case of >1 or <-1 => correct to 1 or -1
+INFproject_COR_r[INFproject_COR_r > 1 ] <- 1
+INFproject_COR_r[INFproject_COR_r < sign(-1) ] <- -1
+
+
+col <- colorRampPalette(c ("blue", "white", "red")) (100)
+heatmap(x=INFproject_COR_r, col=col, symm = TRUE)
+
+
+
+
+
+
+
+coldiabetologia <- colorRampPalette(c("red", "white", "blue"))
+
+corrplot(INFproject_COR_r, type = "full", na.label = "NA", p.mat = INFproject_COR_P,  insig = "blank", method = "square",
+         sig.level = c(.05), pch.cex = 1, tl.cex = 1, pch.col = "black",
+         order = "alphabet", addrect = 6, tl.col = "black", outline = "black", col = coldiabetologia(100))
+
+
+corrplot(c, type = "full", na.label = "NA", p.mat = c,  insig = "blank", method = "square",
+         sig.level = c(.05), pch.cex = 1, tl.cex = 1, pch.col = "black",
+         order = "alphabet", addrect = 6, tl.col = "black", outline = "black", col = coldiabetologia(100))
+
+
+corrplot(INFproject_COR_r, type = "full", na.label = "NA", p.mat = INFproject_COR_P,  insig = "label_sig", method = "square",
+         sig.level = c(.001, .01, .05), pch.cex = 1, tl.cex = 1, pch.col = "black",
+         order = "alphabet", addrect = 6, tl.col = "black", outline = "black", col = coldiabetologia(100))
