@@ -25,3 +25,21 @@ pheatmap(Control_2,
          color = colors,
          show_rownames = FALSE,
          main = "Controls")
+High_All_2 <- High_All[, -1]
+pheatmap(High_All_2, 
+         scale = "none",  
+         breaks = breaks, 
+         color = colors,
+         show_rownames = FALSE,
+         main = "SSc IFN+ signature",
+         legend_title = "Log2Fold_Change")
+
+
+Low_All_2 <- Low_ALL[, -1]
+pheatmap(Low_All_2, 
+         scale = "none",  
+         breaks = breaks, 
+         color = colors,
+         show_rownames = FALSE,
+         main = "SSc IF- signature",
+         legend_title = "Log2Fold_Change")
