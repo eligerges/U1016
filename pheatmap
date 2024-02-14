@@ -1,0 +1,27 @@
+# Créer le heatmap avec pheatmap
+pheatmap(donnees)
+High_2 <- High[, -1]
+breaks <- c(seq(-4, 0, length.out = 101), seq(0.1, 4, length.out = 101))
+colors <- colorRampPalette(c("blue", "white", "red"))(length(breaks) - 1)
+pheatmap(High_2, scale = "none", breaks = breaks, color = colors, show_rownames = FALSE, main = "SSc IFN+ signature")
+
+Low_2 <- Low[, -1]
+breaks <- c(seq(-4, 0, length.out = 101), seq(0.1, 4, length.out = 101))
+colors <- colorRampPalette(c("blue", "white", "red"))(length(breaks) - 1)
+
+pheatmap(Low_2, 
+         scale = "none",  
+         breaks = breaks, 
+         color = colors,
+         show_rownames = FALSE,
+         main = "SSc IFN- signature",
+         legend_title = "Log2Fold_Change")
+
+Control_2 <- control[, -1]
+
+pheatmap(Control_2, 
+         scale = "none",  
+         breaks = breaks, 
+         color = colors,
+         show_rownames = FALSE,
+         main = "Controls")
