@@ -1,0 +1,271 @@
+# Créer le heatmap avec pheatmap
+pheatmap(donnees)
+High_2 <- High[, -1]
+breaks <- c(seq(-4, 0, length.out = 101), seq(0.1, 4, length.out = 101))
+colors <- colorRampPalette(c("blue", "white", "red"))(length(breaks) - 1)
+pheatmap(High_2, scale = "none", breaks = breaks, color = colors, show_rownames = FALSE, main = "SSc IFN+ signature")
+
+Low_2 <- Low[, -1]
+breaks <- c(seq(-4, 0, length.out = 101), seq(0.1, 4, length.out = 101))
+colors <- colorRampPalette(c("blue", "white", "red"))(length(breaks) - 1)
+
+pheatmap(Low_2, 
+         scale = "none",  
+         breaks = breaks, 
+         color = colors,
+         show_rownames = FALSE,
+         main = "SSc IFN- signature",
+         legend_title = "Log2Fold_Change")
+
+Control_2 <- control[, -1]
+
+pheatmap(Control_2, 
+         scale = "none",  
+         breaks = breaks, 
+         color = colors,
+         show_rownames = FALSE,
+         main = "Controls")
+
+High_All_2 <- High_All[, -1]
+pheatmap(High_All_2, 
+         scale = "none",  
+         breaks = breaks, 
+         color = colors,
+         show_rownames = FALSE,
+         main = "SSc IFN+ signature",
+         legend_title = "Log2Fold_Change")
+
+
+Low_All_2 <- Low_ALL[, -1]
+pheatmap(Low_All_2, 
+         scale = "none",  
+         breaks = breaks, 
+         color = colors,
+         show_rownames = FALSE,
+         main = "SSc IFN- signature",
+         legend_title = "Log2Fold_Change")
+
+# Création d'un sous-ensemble des données pour les personnes avec un statut "HIGH"
+subset_high <- subset(CFV, IFN == "HIGH")
+
+# Calcul de la différence en pourcentage entre les mesures après deux ans et les mesures initiales
+CFV$Difference_percent <- ((CFV$CVF_2ans - CFV$CVF_T0) / CFV$CVF_T0) * 100
+
+# Création d'un sous-ensemble pour les personnes avec une diminution de la CVF d'au moins 5%
+subset_diminution <- subset(subset_high, Difference_percent <= -5)
+
+# Comptage du nombre de personnes dans ce sous-ensemble
+nombre_personnes_diminution_high_5 <- nrow(subset_diminution)
+
+# Affichage du nombre de personnes dont la CVF a diminué d'au moins 5% avec le statut "HIGH"
+print(nombre_personnes_diminution_high_5)
+
+# Supposons que vous avez une colonne nommée "Difference_percent" dans votre dataframe "CFV"
+# Vous voulez créer une nouvelle colonne appelée "Qualification" dans le dataframe "CFV_qualified"
+
+# Création de la colonne "Qualification" en fonction de la colonne "Difference_percent"
+CFV_PLOT <- CFV
+CFV_qualified$Qualification <- ifelse(CFV_qualified$Difference_percent <= -5, "Diminution", "Pas de changement")
+
+# Affichage des premières lignes pour vérification
+head(CFV_qualified)
+
+# Suppression de la colonne "Difference_percent" du dataframe
+CFV_PLOT <- subset(CFV_PLOT, select = c(CVF_T0, CVF_2ans, IFN))
+
+# Affichage des premières lignes pour vérification
+head(CFV_qualified)
+
+# Supposons que vous avez un dataframe appelé "CFV" avec les informations sur les 162 patients
+# La première colonne est nommée "IFN" et la deuxième "Diminution_CVF"
+
+# Compter le nombre de patients avec un statut IFN+ élevé ("High") pour chaque catégorie de diminution de la CVF
+counts <- table(CFV_qualified$Qualification[CFV$IFN == "High"])
+
+# Créer un graphique en barres
+barplot(counts, 
+        main = "Corrélation entre la signature IFN+ et la diminution de la CVF après 2 ans",
+        xlab = "Diminution de la CVF après 2 ans",
+        ylab = "Nombre de patients",
+        col = c("blue", "red"),
+        ylim = c(0, max(counts)*1.2))
+
+# Ajouter une légende
+legend("topright", legend = c("Diminution", "Pas de diminution"), fill = c("blue", "red"))
+
+
+# Calculer la différence de CVF entre la deuxième visite et la première visite pour chaque patient
+CFV_PLOT$Difference_CVF <- CFV_PLOT$CVF_2ans - CFV_PLOT$CVF_T0
+
+# Créer un graphique en nuage de points
+plot(CFV_PLOT$IFN, CFV_PLOT$Difference_CVF,
+     xlab = "Statut IFN",
+     ylab = "Différence de CVF après 2 ans (CVF_2ans - CVF_T0)",
+     main = "Corrélation entre le statut IFN et la différence de CVF après 2 ans")
+
+# Ajouter une ligne de tendance (optionnelle)
+abline(lm(CVF_plot$Difference_CVF ~ as.numeric(CVF_plot$IFN)), col = "red")
+
+# Vérifier les longueurs des variables
+length(CFV_PLOT$IFN)
+length(CFV_PLOT$Difference_CVF)
+
+any(is.na(CFV_PLOT$IFN))
+any(is.na(CFV_PLOT$Difference_CVF))
+any(is.na(CFV_PLOT$IFN) | is.na(CFV_PLOT$Difference_CVF))
+
+# Calculer la différence de CVF entre la deuxième visite et la première visite pour chaque patient
+CFV_PLOT$Difference_CVF <- CFV_PLOT$CVF_2ans - CFV_PLOT$CVF_T0
+
+# Créer un graphique en nuage de points avec jitter pour la variable IFN
+plot(jitter(as.numeric(factor(CFV_PLOT$IFN))), CFV_PLOT$Difference_CVF,
+     xlab = "Statut IFN",
+     ylab = "Différence de CVF après 2 ans (CVF_2ans - CVF_T0)",
+     main = "Corrélation entre le statut IFN et la différence de CVF après 2 ans")
+
+# Ajouter une ligne de tendance (optionnelle)
+abline(lm(CFV_PLOT$Difference_CVF ~ as.numeric(factor(CFV_PLOT$IFN))), col = "red")
+# Créer un graphique en barres pour représenter le statut IFN
+barplot(CFV_PLOT$Difference_CVF ~ CFV_PLOT$IFN,
+        xlab = "Statut IFN",
+        ylab = "Différence de CVF après 2 ans (CVF_2ans - CVF_T0)",
+        main = "Corrélation entre le statut IFN et la différence de CVF après 2 ans",
+        col = c("blue", "red"))
+
+# Ajouter une légende
+legend("topright", legend = c("High", "Low"), fill = c("blue", "red"))
+
+
+
+# Installer et charger les packages nécessaires
+install.packages("pheatmap")
+library(pheatmap)
+library(readxl)
+
+# Charger les données à partir du fichier Excel
+
+
+# Sélectionner uniquement les colonnes de log2FC pour chaque groupe
+log2FC_data <- Gene[, c("W_I", "A_I", "B_I", "AB_I")]
+
+# Définir les limites de l'échelle pour les log2FC
+min_value <- -9
+max_value <- 9
+
+# Définir le nombre de niveaux dans l'échelle
+num_levels <- 19  # 11 niveaux pour inclure 0
+
+# Calculer les points de rupture
+breaks <- seq(-9, 9, length.out = 101)
+
+# Couleurs pour les points de rupture
+breaks_colors <- colorRampPalette(c("blue", "white", "red"))(num_levels - 1)
+
+# Créer la heatmap avec l'échelle personnalisée et la classification hiérarchique
+pheatmap(log2FC_data, 
+         cluster_rows = TRUE,  # Regrouper les lignes (gènes)
+         cluster_cols = TRUE,  # Regrouper les colonnes (groupes)
+         breaks = breaks,  # Utiliser l'échelle personnalisée pour les couleurs
+         breaks_colors = breaks_colors)  # Utiliser les couleurs définies pour les points de rupture
+
+# Créer la heatmap avec les noms de gènes sur l'axe des lignes
+pheatmap(log2FC_data, 
+         cluster_rows = TRUE,  # Regrouper les lignes (gènes)
+         cluster_cols = TRUE,  # Regrouper les colonnes (groupes)
+         breaks = breaks,  # Utiliser l'échelle personnalisée pour les couleurs
+         breaks_colors = breaks_colors,  # Utiliser les couleurs définies pour les points de rupture
+         labels_row = Gene$`GENE ID`)  # Utiliser les noms de gènes comme étiquettes de lignes
+
+# Créer la heatmap avec les paramètres modifiés
+pheatmap(log2FC_data, 
+         cluster_rows = TRUE,       # Regrouper les lignes (gènes)
+         cluster_cols = TRUE,       # Regrouper les colonnes (groupes)
+         breaks = breaks,           # Utiliser l'échelle personnalisée pour les couleurs
+         breaks_colors = breaks_colors,  # Utiliser les couleurs définies pour les points de rupture
+         labels_row = Gene$`GENE ID`,   # Utiliser les noms de gènes comme étiquettes de lignes
+         angle_col = 0,            # Orientation horizontale pour les étiquettes des colonnes
+         fontsize_row = 10,         # Taille de police pour les noms de gènes
+         labels_row = "italic")  # Mettre les noms de gènes en italique
+
+# Fonction personnalisée pour mettre les noms de gènes en italique
+italic_genes <- function(labels) {
+  italic_labels <- sapply(labels, function(label) {
+    if (!is.na(label))
+      bquote(italic(.(label)))
+    else
+      NA
+  })
+  return(italic_labels)
+}
+
+# Créer la heatmap avec les paramètres modifiés
+pheatmap(log2FC_data, 
+         cluster_rows = TRUE,       # Regrouper les lignes (gènes)
+         cluster_cols = TRUE,       # Regrouper les colonnes (groupes)
+         breaks = breaks,           # Utiliser l'échelle personnalisée pour les couleurs
+         breaks_colors = breaks_colors,  # Utiliser les couleurs définies pour les points de rupture
+         labels_row = italic_genes(data$Gene),   # Utiliser les noms de gènes en italique
+         angle_col = 0,            # Orientation horizontale pour les étiquettes des colonnes
+         fontsize_row = 8)         # Taille de police pour les noms de gènes
+
+pheatmap(log2FC_data,
+         cluster_rows = TRUE,            # Regrouper les lignes (gènes)
+         cluster_cols = TRUE,            # Regrouper les colonnes (groupes)
+         breaks = breaks,                # Utiliser l'échelle personnalisée pour les couleurs
+         breaks_colors = breaks_colors,  # Utiliser les couleurs définies pour les points de rupture
+         labels_row = Gene$`GENE ID`[1:49],   # Utiliser les noms des 50 premiers gènes comme étiquettes de lignes
+         angle_col = 0,                  # Orientation horizontale pour les étiquettes des colonnes
+         fontsize_row = 8)               # Taille de police pour les noms de gènes
+
+
+
+# Charger les données
+donnees <- read.csv("donnees.csv") # Remplacez "donnees.csv" par le nom de votre fichier de données
+
+# Ajuster le modèle de régression logistique multivariée
+modele <- glm(progression ~ IFN + age + forme_maladie + auto-anticorps, data = donnees, family = "binomial")
+
+# Afficher les résultats du modèle
+summary(modele)
+modele <- glm2(Progression ~ IFN + Age + maladie + Anti_Scl70, data = Regression, family = binomial)
+summary(modele)
+
+# Calculer les probabilités prédites
+probas_predites <- predict(modele, type = "response")
+
+# Créer un graphique de probabilités prédites en fonction de l'IFN
+plot(Regression$Anti_Scl70, probas_predites, xlab = "Anti_Scl70", ylab = "Probabilité de progression", main = "Probabilité de progression en fonction de l'anti-Scl70")
+
+
+# Créer un vecteur de probabilités prédites
+probas_predites <- predict(modele, type = "response")
+
+# Créer le graphe avec un axe des ordonnées de 0 à 1
+plot(Regression$IFN, probas_predites, xlab = "IFN", ylab = "Probabilité de progression", main = "Probabilité de progression en fonction de l'IFN", xlim = c(0, 1))
+
+# Afficher les résultats du modèle
+Form <- glm2(Progression ~ sexe, data = Only, family = binomial)
+summary(Form)
+
+# Ajuster le modèle de régression logistique multivariée
+modele <- glm(ILD ~ form + sexe + MAI + Scl70 + ACA + AAN + RNA + rodnan + ulcers + duration + age + CVF + IFN, data = Only, family = "binomial")
+summary(modele)
+
+# Ajuster le modèle de régression logistique multivariée
+Final_RES <- glm(ILD ~ CVF, data = Final, family = "binomial")
+summary(Final_RES)
+
+
+# Tracer le volcano plot
+plot(vol$Log2FC, vol$`logFDR`,
+     xlab = "Log2FC", ylab = "logFDR",
+     main = "Volcano Plot des gènes différentiellement régulés",
+     pch = 20, col = ifelse(abs(vol$Log2FC) > 1.5 & vol$`logFDR` > 1.3, "red", "black"))
+
+# Ajouter des lignes pour représenter les seuils de significativité
+abline(h = 1.3, col = "blue", lty = 2)  # Seuil de significativité pour -log10(FDR)
+abline(v = c(-1.5, 1.5), col = "blue", lty = 2)  # Seuil de significativité pour log2FoldChange
+
+# Légende
+legend("topright", legend = c("Non significatif", "Significatif"),
+       pch = c(20, 20), col = c("black", "red"))
