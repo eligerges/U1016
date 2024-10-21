@@ -1,0 +1,6 @@
+#ssh egerges@core.cluster.france-bioinformatique.fr
+Télécharger dans le repertoire les fichiers fastq.bz2 depuis Fillezella
+FastQC ne peut pas traiter directement les fichiers compressés en .bz2, donc vous devez d'abord décompresser le fichier SH1.fastq.bz2 en utilisant la commande bzip2 :
+               egerges@clust-slurm-client2:/shared/projects/gene_scleroderma_tissue/hypoxia_RNAseq/fastqc_files$ bzip2 -d SH1.fastq.bz2
+assurer toutjours que la fonction fastqc existe par "module load" puis voir taper module load fastqc pour l'integrer
+egerges@clust-slurm-client2:/shared/projects/gene_scleroderma_tissue/hypoxia_RNAseq/fastqc_files$ bzip2 -d SH1.fastq.bz2
