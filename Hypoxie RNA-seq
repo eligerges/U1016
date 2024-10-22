@@ -1,6 +1,110 @@
-#ssh egerges@core.cluster.france-bioinformatique.fr
+Dans terminal mon ordinateur:
+ssh egerges@core.cluster.france-bioinformatique.fr
+
 Télécharger dans le repertoire les fichiers fastq.bz2 depuis Fillezella
 FastQC ne peut pas traiter directement les fichiers compressés en .bz2, donc vous devez d'abord décompresser le fichier SH1.fastq.bz2 en utilisant la commande bzip2 :
                egerges@clust-slurm-client2:/shared/projects/gene_scleroderma_tissue/hypoxia_RNAseq/fastqc_files$ bzip2 -d SH1.fastq.bz2
+              pour tous les autres : bzip2 -d *.fastq.bz2
+
 assurer toutjours que la fonction fastqc existe par "module load" puis voir taper module load fastqc pour l'integrer
-egerges@clust-slurm-client2:/shared/projects/gene_scleroderma_tissue/hypoxia_RNAseq/fastqc_files$ bzip2 -d SH1.fastq.bz2
+egerges@clust-slurm-client2:/shared/projects/gene_scleroderma_tissue/hypoxia_RNAseq/fastqc_files$ fastqc SH1.fastq -o ./ -f fastq --outdir ./ --noextract --name SH1.fastqc
+pour une seul fois pour tous les fichiers: (ces 3 lignes avec done):
+
+for file in *.fastq; do
+    fastqc "$file" -o ./ --noextract --name "${file%.fastq}.fastqc"
+done
+
+Faire après un fastp :  fastp -i SH1.fastq -o SH1_trimmed.fastq -h SH1_fastp_report.html
+pour tous le sautres en un seul coup: 
+
+for file in *.fastq; do
+    fastp -i "$file" -o "${file%.fastq}_trimmed.fastq" -h "${file%.fastq}_fastp_report.html"
+done
+
+j'ai téléchargé le génome fasta  qui s'apelle genome.fa
+taper module load bowtie2
+il faut faire l'indexation:
+---Tout d'abord j'ai cree un folder qui s'apelle Bowtie2_index pui j'ai lancé dedans: 
+
+egerges@clust-slurm-client2:/shared/projects/gene_scleroderma_tissue$ bowtie2-build /shared/projects/gene_scleroderma_tissue/genome.fa /shared/projects/gene_scleroderma_tissue/Bowtie2_index/human_genome_index
+
+dans cet operation il yau la formation de plusieurs fichiers quis ervent pour toujoursssssss et que j'auarais besoin pour lancerrr l'aligenement une fois faite 
+
+Pour aligenement example pour un fichier : ligne de commande faite à tapers dans repertoir fastqc_files donc lancer ca:
+egerges@clust-slurm-client2:/shared/projects/gene_scleroderma_tissue/hypoxia_RNAseq/fastqc_files$ bowtie2 -x /shared/projects/gene_scleroderma_tissue/Bowtie2_index/human_genome_index \
+         -U SH1_trimmed.fastq \
+         -S /shared/projects/gene_scleroderma_tissue/hypoxia_RNAseq/bam/SH1_aligned.sam \
+         -p 4
+
+example de résulatat : 47539758 reads; of these:
+  47539758 (100.00%) were unpaired; of these:
+    5559862 (11.70%) aligned 0 times
+    31834703 (66.96%) aligned exactly 1 time
+    10145193 (21.34%) aligned >1 times
+88.30% overall alignment rate
+
+donc mainetnat dans le fichier bam : on un fichier SH1_aligned. sam il faut le convertsir à bam par :
+
+egerges@clust-slurm-client2:/shared/projects/gene_scleroderma_tissue/hypoxia_RNAseq/fastqc_files$ samtools view -S -b /shared/projects/gene_scleroderma_tissue/hypoxia_RNAseq/bam/SH1_aligned.sam > /shared/projects/gene_scleroderma_tissue/hypoxia_RNAseq/bam/SH1_aligned.bam
+
+lancerr l'aligenement pour tous les fichierss d'un seul coup: (important):
+Voici comment vous pouvez traiter plusieurs fichiers FASTQ tout en évitant de réanalyser les fichiers déjà alignés, comme SH1_trimmed.fastq, et en produisant directement des fichiers BAM sans passer par des fichiers SAM.
+
+Étapes à suivre :
+Lister les fichiers à traiter : Assurez-vous d'avoir une liste des fichiers FASTQ qui doivent encore être alignés. Par exemple, si vous avez plusieurs fichiers nommés comme SH2_trimmed.fastq, SH3_trimmed.fastq, etc.
+
+Script pour automatiser l'alignement et la conversion en BAM : Voici un exemple de script Bash qui boucle sur tous vos fichiers FASTQ restants (en excluant SH1_trimmed.fastq) et les aligne avec Bowtie2, puis les convertit directement en fichiers BAM.
+
+#!/bin/bash
+
+# Dossier contenant vos fichiers FASTQ
+FASTQ_DIR="/shared/projects/gene_scleroderma_tissue/hypoxia_RNAseq/fastqc_files"
+# Dossier où vous voulez enregistrer vos fichiers BAM
+BAM_DIR="/shared/projects/gene_scleroderma_tissue/hypoxia_RNAseq/bam"
+# Dossier contenant les fichiers d'index Bowtie2
+INDEX_DIR="/shared/projects/gene_scleroderma_tissue/Bowtie2_index/human_genome_index"
+
+# Boucle sur tous les fichiers _trimmed.fastq sauf SH1_trimmed.fastq
+for fastq_file in ${FASTQ_DIR}/*_trimmed.fastq; do
+    # Ne pas réanalyser SH1_trimmed.fastq
+    if [[ "$fastq_file" == *"SH1_trimmed.fastq" ]]; then
+        continue
+    fi
+
+    # Extraire le nom de base du fichier sans extension
+    sample_name=$(basename "$fastq_file" _trimmed.fastq)
+
+    # Lancer Bowtie2 et convertir directement en BAM
+    bowtie2 -x "$INDEX_DIR" \
+            -U "$fastq_file" \
+            -p 4 | samtools view -S -b -o "$BAM_DIR/${sample_name}_aligned.bam"
+    
+    echo "Alignement terminé pour $sample_name et fichier BAM généré."
+
+done
+
+donc de #!/bin/bash à done copier coller dans noted pad puis 
+Sauvegardez le fichier sous .sh :
+
+Allez dans Fichier > Enregistrer sous....
+Dans le champ Nom de fichier, entrez align_and_convert.sh.
+Dans le champ Type, sélectionnez Tous les fichiers.
+Sauvegardez le fichier dans le répertoire où vous allez l'utiliser (par exemple, dans votre espace utilisateur sur le serveur si vous y avez accès via un outil comme WinSCP).
+Transférez le fichier sur le serveur :
+
+Si vous travaillez sur un serveur Linux via SSH, transférez le fichier avec un logiciel comme WinSCP ou FileZilla si vous êtes sous Windows.
+Sur le serveur :
+
+Une fois le fichier sur le serveur, assurez-vous qu'il soit exécutable :
+
+chmod +x align_and_convert.sh
+
+aprèssss ca j'ailanceé ls cript mais m'a dit qui n'est pas sous forme d elinux donc il m'a demandé de faire 
+
+Convertir le script pour qu'il soit compatible avec Linux : Vous pouvez utiliser une commande appelée dos2unix pour convertir le fichier en format Linux.
+
+dos2unix /shared/projects/gene_scleroderma_tissue/hypoxia_RNAseq/align_and_convert.sh
+ et mainetantttt lancer le script dans : 
+egerges@clust-slurm-client2:/shared/projects/gene_scleroderma_tissue/hypoxia_RNAseq$ ./align_and_convert.sh
+
+revenir idéee indexation de bam??????
