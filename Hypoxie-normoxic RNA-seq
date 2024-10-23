@@ -136,4 +136,14 @@ featureCounts -a /shared/projects/gene_scleroderma_tissue/hypoxia_RNAseq/genes.g
 -t exon -g gene_id \
 CH*_aligned_sorted.bam SH*_aligned_sorted.bam
 
-CD
+.............................................................
+Normoxic: SN vs CN
+
+egerges@clust-slurm-client:/shared/projects/gene_scleroderma_tissue/normoxic_RNA_seq/fastqc_files$ bzip2 -d *.fastq.bz2
+
+for file in *.fastq; do
+    fastp -i "$file" -o "${file%.fastq}_trimmed.fastq" -h "${file%.fastq}_fastp_report.html"
+done
+
+
+
