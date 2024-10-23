@@ -107,4 +107,36 @@ dos2unix /shared/projects/gene_scleroderma_tissue/hypoxia_RNAseq/align_and_conve
  et mainetantttt lancer le script dans : 
 egerges@clust-slurm-client2:/shared/projects/gene_scleroderma_tissue/hypoxia_RNAseq$ ./align_and_convert.sh
 
-revenir idéee indexation de bam??????
+Voilà les fichiers bam sont bien préents maintenants
+etape suivante l'indexation des fichiers bam pour generer les fichiers .bam.bai or après lancer la ligne de commande l'indexation ne passe pas, linux et cthap gpt on montré par (samtools view -H CH1_aligned.bam) une mausaise trie des ficheirs bam donc il faut faire un trie 
+par :
+samtools sort CH1_aligned.bam -o CH1_aligned_sorted.bam
+après caaa j'ai verifeirr et tout est bon j'ai lance l'indexation par: samtools index CH1_aligned_sorted.bam et ca bine donné le fichier .bam.bai
+ 
+j'ai un lancé un script popur tous les autre fichiers pour le trie : qui commence par for bam_file et termine par done
+
+for bam_file in *_aligned.bam; do
+    sorted_bam="${bam_file%.bam}_sorted.bam"
+    if [ ! -f "$sorted_bam" ]; then
+        echo "Sorting $bam_file..."
+        samtools sort -o "$sorted_bam" "$bam_file"
+        echo "Done sorting $bam_file."
+    else
+        echo "$sorted_bam already exists, skipping..."
+    fi
+done
+par la suite j'ai indexation pour cahqun à part car c'est rapide
+
+#Countsssssss
+module load subread (et pas module load featureCounts)
+dans le fichier bam lancer : ici me crerr un seul fichier avec les deux conditions et tous le sréplicats.
+
+featureCounts -a /shared/projects/gene_scleroderma_tissue/hypoxia_RNAseq/genes.gtf \
+-o /shared/projects/gene_scleroderma_tissue/hypoxia_RNAseq/counts.txt \
+-t exon -g gene_id \
+CH*_aligned_sorted.bam SH*_aligned_sorted.bam
+
+
+
+
+FICHIER genes.gtf c'est le bon fichier pour lancer les features counts
