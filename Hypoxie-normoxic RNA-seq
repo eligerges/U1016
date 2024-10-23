@@ -136,7 +136,4 @@ featureCounts -a /shared/projects/gene_scleroderma_tissue/hypoxia_RNAseq/genes.g
 -t exon -g gene_id \
 CH*_aligned_sorted.bam SH*_aligned_sorted.bam
 
-
-
-
-FICHIER genes.gtf c'est le bon fichier pour lancer les features counts
+CD
