@@ -104,6 +104,7 @@ aprèssss ca j'ailanceé ls cript mais m'a dit qui n'est pas sous forme d elinux
 Convertir le script pour qu'il soit compatible avec Linux : Vous pouvez utiliser une commande appelée dos2unix pour convertir le fichier en format Linux.
 
 dos2unix /shared/projects/gene_scleroderma_tissue/hypoxia_RNAseq/align_and_convert.sh
+TAPEZ module load samtools
  et mainetantttt lancer le script dans : 
 egerges@clust-slurm-client2:/shared/projects/gene_scleroderma_tissue/hypoxia_RNAseq$ ./align_and_convert.sh
 
@@ -138,12 +139,66 @@ CH*_aligned_sorted.bam SH*_aligned_sorted.bam
 
 .............................................................
 Normoxic: SN vs CN
-
+1: 
 egerges@clust-slurm-client:/shared/projects/gene_scleroderma_tissue/normoxic_RNA_seq/fastqc_files$ bzip2 -d *.fastq.bz2
 
+2:
 for file in *.fastq; do
     fastp -i "$file" -o "${file%.fastq}_trimmed.fastq" -h "${file%.fastq}_fastp_report.html"
 done
 
+3:
+chmod +x align_and_convert.sh
+
+4:
+dos2unix align_and_convert.sh
+module load samtools/
+5:
+egerges@clust-slurm-client2:/shared/projects/gene_scleroderma_tissue/normoxic_RNA_seq$ ./align_and_convert.sh
+
+6:
+d'ici
+
+#!/bin/bash
+
+# Dossier contenant vos fichiers FASTQ
+FASTQ_DIR="/shared/projects/gene_scleroderma_tissue/normoxic_RNA_seq/fastqc_files"
+# Dossier où vous voulez enregistrer vos fichiers BAM
+BAM_DIR="/shared/projects/gene_scleroderma_tissue/normoxic_RNA_seq/bam"
+# Dossier contenant les fichiers d'index Bowtie2
+INDEX_DIR="/shared/projects/gene_scleroderma_tissue/Bowtie2_index/human_genome_index"
+
+# Boucle sur tous les fichiers _trimmed.fastq
+for fastq_file in ${FASTQ_DIR}/*_trimmed.fastq; do
+
+    # Extraire le nom de base du fichier sans extension
+    sample_name=$(basename "$fastq_file" _trimmed.fastq)
+
+    # Lancer Bowtie2 et convertir directement en BAM
+    bowtie2 -x "$INDEX_DIR" \
+            -U "$fastq_file" \
+            -p 4 | samtools view -S -b -o "$BAM_DIR/${sample_name}_aligned.bam"
+    
+    echo "Alignement terminé pour $sample_name et fichier BAM généré."
+
+done
+
+à la
+
+7: tRIE
+
+for bam_file in *_aligned.bam; do
+    sorted_bam="${bam_file%.bam}_sorted.bam"
+    if [ ! -f "$sorted_bam" ]; then
+        echo "Sorting $bam_file..."
+        samtools sort -o "$sorted_bam" "$bam_file"
+        echo "Done sorting $bam_file."
+    else
+        echo "$sorted_bam already exists, skipping..."
+    fi
+done
+
+8:  featureCounts -a /shared/projects/gene_scleroderma_tissue/genes.gtf -o /shared/projects/gene_scleroderma_tissue/normox
+ic_RNA_seq/counts.txt -t exon -g gene_id SN*_aligned_sorted.bam CN*_aligned_sorted.bam
 
 
