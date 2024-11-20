@@ -1,5 +1,11 @@
 Dans terminal mon ordinateur:
-ssh egerges@core.cluster.france-bioinformatique.fr
+ssh egerges@core.cluster.france-bioinformatique.fr code Inserm1016@@
+
+pour acceder à ma session : egerges@clust-slurm-client2:~$ cd /shared/projects/gene_scleroderma_tissue/
+
+
+
+
 
 Télécharger dans le repertoire les fichiers fastq.bz2 depuis Fillezella
 FastQC ne peut pas traiter directement les fichiers compressés en .bz2, donc vous devez d'abord décompresser le fichier SH1.fastq.bz2 en utilisant la commande bzip2 :
