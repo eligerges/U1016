@@ -22,3 +22,16 @@ for fq1 in *_1.fq.gz; do
       -h "${sample}_fastp.html" \
       -j "${sample}_fastp.json"
 done
+
+APRES l'alignement vient!!! maiss attention!! il faut faire l'indexation du génome. deja j'ai trois type de fichiers à utiliser qui sont ; genome.fa.gz, genome.gtf.gz et genome_gene.fa.gz
+ ces fichiers que je mentionnes ne sont pas les résultats de l’indexation de Bowtie2. Voici la clarification :
+
+📦 Ce que tu as :
+Fichier	Signification	Sert à quoi ?
+genome.fa.gz	🧬 Fichier FASTA compressé (séquence du génome)	Nécessaire pour construire l’index Bowtie2
+genome.gtf.gz	🧭 Fichier GTF (annotations)	Nécessaire pour le comptage (pas Bowtie2)
+genome_gene.fa.gz	📘 Séquences d’ARNm (gènes)	Pas utile pour Bowtie2
+
+📌 Donc : Tu dois encore indexer le génome avec bowtie2-build.
+Même si tu as le fichier genome.fa.gz, ce n’est pas encore un index utilisable par Bowtie2.
+
