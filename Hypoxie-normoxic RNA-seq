@@ -3,11 +3,14 @@ ssh egerges@core.cluster.france-bioinformatique.fr code Inserm1016@@
 
 pour acceder à ma session : egerges@clust-slurm-client2:~$ cd /shared/projects/gene_scleroderma_tissue/
 
-
-
+allez au filezella... cliquer sur open the site manager.. puis connect direiger vers shared/projects/gene_scleroderma_tissue
 
 
 Télécharger dans le repertoire les fichiers fastq.bz2 depuis Fillezella
+
+Si tes fichiers sont en .fq.gz (ou .fastq.gz), pas besoin de les décompresser manuellement pour utiliser FastQC, car FastQC peut lire directement les fichiers compressés au format .gz.
+
+
 FastQC ne peut pas traiter directement les fichiers compressés en .bz2, donc vous devez d'abord décompresser le fichier SH1.fastq.bz2 en utilisant la commande bzip2 :
                egerges@clust-slurm-client2:/shared/projects/gene_scleroderma_tissue/hypoxia_RNAseq/fastqc_files$ bzip2 -d SH1.fastq.bz2
               pour tous les autres : bzip2 -d *.fastq.bz2
