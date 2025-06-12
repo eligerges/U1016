@@ -1,1 +1,24 @@
+ajouter les fichiers .fq.gz depuis l'ordi à filezellaa.
+note important pas besoin de faire l'etape comme le script avant car fastqc marche avec .fq.gz
+j'ai pas fait les fastqc pour les ficheirs car cette etape ne genere passsss des fichiers à utiliser plus tarddd
+maisss quand memeeeeeee voici les lignes de commandes:
+egerges@clust-slurm-client2:/shared/projects/gene_scleroderma_tissue/mice_RNAseq_analysis/fastq$ module load fastqc
+egerges@clust-slurm-client2:/shared/projects/gene_scleroderma_tissue/mice_RNAseq_analysis/fastq$ fastqc *.fq.gz
 
+Passer à fastp:
+
+Comme les fichiers sont en paired-end (_1.fq.gz et _2.fq.gz), la commande fastp doit être utilisée en paire, pas fichier par fichier comme dans ta boucle d’avant:
+copier coller de for jusqu'à done
+
+for fq1 in *_1.fq.gz; do
+    fq2="${fq1/_1.fq.gz/_2.fq.gz}"
+    sample=$(basename "$fq1" _1.fq.gz)
+
+    fastp \
+      -i "$fq1" \
+      -I "$fq2" \
+      -o "${sample}_1.trimmed.fq.gz" \
+      -O "${sample}_2.trimmed.fq.gz" \
+      -h "${sample}_fastp.html" \
+      -j "${sample}_fastp.json"
+done
