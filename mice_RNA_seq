@@ -35,3 +35,54 @@ genome_gene.fa.gz	📘 Séquences d’ARNm (gènes)	Pas utile pour Bowtie2
 📌 Donc : Tu dois encore indexer le génome avec bowtie2-build.
 Même si tu as le fichier genome.fa.gz, ce n’est pas encore un index utilisable par Bowtie2.
 
+
+doncccccc decompresser les troisssssss fichierssssss  genome.fa.gz et les autres : dans le meme lieu ou il est: parrrrr : 
+egerges@clust-slurm-client2:/shared/projects/gene_scleroderma_tissue/mice_RNAseq_analysis$ gunzip genome.fa.gz
+
+crerr un fichier qui s'apelle Bowtie2_index
+puis dans ce fichier lancé : 
+bowtie2-build genome.fa genome_index
+
+Tout d'abord j'ai cree un folder qui s'apelle Bowtie2_index pui j'ai lancé dedans: 
+
+egerges@clust-slurm-client2:/shared/projects/gene_scleroderma_tissue/mice_RNAseq_analysis/Bowtie2_index$ bowtie2-build /shared/projects/gene_scleroderma_tissue/mice_RNAseq_analysis/genome.fa /shared/projects/gene_scleroderma_tissue/Bowtie2_index/mice_genome_index
+
+dans cet operation il yau la formation de plusieurs fichiers quis ervent pour toujoursssssss et que j'auarais besoin pour lancerrr l'aligenement une fois faite ..
+
+PASSSS BESOIN DE LANCER L4INDEXATIONNN UNE DEUXI7MEEE FOIS POUR AUTRE PROJETT SI DEJA FAITTT
+
+egerges@clust-slurm-client2:/shared/projects/gene_scleroderma_tissue/mice_RNAseq_analysis/Bowtie2_index$ module load bowtie2
+
+Pour aligenement example pour un fichier : ligne de commande faite à tapers dans repertoir fastqc
+
+
+bowtie2 -x /shared/projects/gene_scleroderma_tissue/Bowtie2_index/human_genome_index \
+        -1 WT_246_1_trimmed.fq.gz \
+        -2 WT_246_2_trimmed.fq.gz \
+        -S /shared/projects/gene_scleroderma_tissue/hypoxia_RNAseq/bam/WT_246_aligned.sam \
+        -p 4
+
+pour alllll:
+
+#!/bin/bash
+
+INDEX=/shared/projects/gene_scleroderma_tissue/Bowtie2_index/human_genome_index
+OUTDIR=/shared/projects/gene_scleroderma_tissue/hypoxia_RNAseq/bam
+THREADS=4
+
+for R1 in *_1_trimmed.fq.gz; do
+    R2=${R1/_1_trimmed.fq.gz/_2_trimmed.fq.gz}
+    SAMPLE=$(basename "$R1" _1_trimmed.fq.gz)
+    OUT="$OUTDIR/${SAMPLE}_aligned.sam"
+    
+    echo "Aligning sample $SAMPLE ..."
+    bowtie2 -x "$INDEX" -1 "$R1" -2 "$R2" -S "$OUT" -p $THREADS
+done
+
+
+
+
+
+
+
+
