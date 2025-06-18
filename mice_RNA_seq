@@ -92,7 +92,7 @@ done
 
 
 
-puisss generer les fichiers BAM trié par position génomique (_sorted.bam) et les fichiers d’index du BAM trié. (bam.bai)
+puisss generer les fichiers BAM trié par position génomique (_sorted.bam) les fichiers d’index du BAM trié. (bam.bai)
 for bam_file in *_aligned.bam; do
     sorted_bam="${bam_file%.bam}_sorted.bam"
     if [ ! -f "$sorted_bam" ]; then
@@ -105,6 +105,11 @@ for bam_file in *_aligned.bam; do
 done
 
 
+les fichiers d’index du BAM trié. (bam.bai): je les ai pa sgenererrr ici. leur but : C’est le fichier d’index du BAM trié.
 
+.bai signifie BAM Index Il permet un accès rapide à des régions spécifiques du génome
+Exemple : dans IGV, tu peux aller direct au chromosome 11 sans charger tout le fichier ou u dans samtools view chr1:1000-2000 grâce à l’index
 
+dernoere etapeeee
+featurescounts
 
