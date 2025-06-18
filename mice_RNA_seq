@@ -84,7 +84,7 @@ for fq1 in ${FASTQ_DIR}/*_1.trimmed.fq.gz; do
     # Lance Bowtie2 avec les deux fichiers fastq, multithread, convertit en BAM
     bowtie2 -x "$INDEX_PREFIX" \
             -1 "$fq1" -2 "$fq2" \
-            -p 4 | samtools view -b -o "$BAM_DIR/${sample_name}_aligned.bam"
+            -p 16 | samtools view -b -o "$BAM_DIR/${sample_name}_aligned.bam"
 
     echo "✅ Alignement terminé pour $sample_name → ${sample_name}_aligned.bam"
 
