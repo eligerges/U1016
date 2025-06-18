@@ -90,7 +90,7 @@ for fq1 in ${FASTQ_DIR}/*_1.trimmed.fq.gz; do
 
 done
 
-
+puisss generer les fichiers BAM trié par position génomique (_sorted.bam) et les fichiers d’index du BAM trié. (bam.bai)
 
 
 
