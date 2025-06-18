@@ -90,8 +90,19 @@ for fq1 in ${FASTQ_DIR}/*_1.trimmed.fq.gz; do
 
 done
 
-puisss generer les fichiers BAM trié par position génomique (_sorted.bam) et les fichiers d’index du BAM trié. (bam.bai)
 
+
+puisss generer les fichiers BAM trié par position génomique (_sorted.bam) et les fichiers d’index du BAM trié. (bam.bai)
+for bam_file in *_aligned.bam; do
+    sorted_bam="${bam_file%.bam}_sorted.bam"
+    if [ ! -f "$sorted_bam" ]; then
+        echo "Sorting $bam_file..."
+        samtools sort -o "$sorted_bam" "$bam_file"
+        echo "Done sorting $bam_file."
+    else
+        echo "$sorted_bam already exists, skipping..."
+    fi
+done
 
 
 
