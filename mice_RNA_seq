@@ -116,3 +116,15 @@ module avail subread puis module load subread/2.0.6
 puis le faireee danssssssssss bam folder
 
 featureCounts -a /shared/projects/gene_scleroderma_tissue/mice_RNAseq_analysis/mice_genome.gtf -o /shared/projects/gene_scleroderma_tissue/mice_RNAseq_analysis/counts.txt -t exon -g gene_id I*_aligned_sorted.bam WT*_aligned_sorted.bam
+orrrrrrrr 💣 Tu as des lectures paired-end, mais featureCounts essaie de les traiter comme du single-end.
+
+
+donccccccc tchat gpt m'a propose de faire ajouter Le flag -p signifie : compter les fragments (paired-end) au lieu des reads individuels.
+et doncccc
+
+featureCounts -T 16cdcd \
+-a /shared/projects/gene_scleroderma_tissue/mice_RNAseq_analysis/mice_genome.gtf \
+-o /shared/projects/gene_scleroderma_tissue/mice_RNAseq_analysis/counts.txt \
+-t exon -g gene_id -p \
+I*_aligned_sorted.bam WT*_aligned_sorted.bam
+
