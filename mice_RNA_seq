@@ -110,6 +110,9 @@ les fichiers d’index du BAM trié. (bam.bai): je les ai pa sgenererrr ici. leu
 .bai signifie BAM Index Il permet un accès rapide à des régions spécifiques du génome
 Exemple : dans IGV, tu peux aller direct au chromosome 11 sans charger tout le fichier ou u dans samtools view chr1:1000-2000 grâce à l’index
 
-dernoere etapeeee
-featurescounts
+pourr dernire etape de features countssss
+tout d'abord il n'exist pas option à load qui s'apelle featuresCounts il faut passer : 
+module avail subread puis module load subread/2.0.6
+puis le faireee danssssssssss bam folder
 
+featureCounts -a /shared/projects/gene_scleroderma_tissue/mice_RNAseq_analysis/mice_genome.gtf -o /shared/projects/gene_scleroderma_tissue/mice_RNAseq_analysis/counts.txt -t exon -g gene_id I*_aligned_sorted.bam WT*_aligned_sorted.bam
