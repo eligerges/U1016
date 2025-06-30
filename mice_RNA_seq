@@ -122,9 +122,20 @@ orrrrrrrr 💣 Tu as des lectures paired-end, mais featureCounts essaie de les t
 donccccccc tchat gpt m'a propose de faire ajouter Le flag -p signifie : compter les fragments (paired-end) au lieu des reads individuels.
 et doncccc
 
-featureCounts -T 16cdcd \
--a /shared/projects/gene_scleroderma_tissue/mice_RNAseq_analysis/mice_genome.gtf \
--o /shared/projects/gene_scleroderma_tissue/mice_RNAseq_analysis/counts.txt \
--t exon -g gene_id -p \
-I*_aligned_sorted.bam WT*_aligned_sorted.bam
+featureCounts -T 16 -a /shared/projects/gene_scleroderma_tissue/mice_RNAseq_analysis/mice_genome.gtf -o /shared/projects/gene_scleroderma_tissue/mice_RNAseq_analysis/counts.txt -t exon -g gene_id -p I*_aligned_sorted.bam WT*_aligned_sorted.bam
 
+
+
+
+
+#####J'ai fait ca sur les echnatillons AB preventif pour comparer avec I14
+for bam_file in *_AB.bam; do
+    sorted_bam="${bam_file%.bam}_sorted.bam"
+    if [ ! -f "$sorted_bam" ]; then
+        echo "Sorting $bam_file..."
+        samtools sort -o "$sorted_bam" "$bam_file"
+        echo "Done sorting $bam_file."
+    else
+        echo "$sorted_bam already exists, skipping..."
+    fi
+done
